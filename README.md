@@ -21,6 +21,59 @@ git repository.
 `npm install menube --save`
 
 
+## Menu Instance
+A menu object is created by calling menube with the path to the JSON file containing
+the menu definition and optional settings.
+
+> require('menube')(Path String, [Settings Object])
+
+I.E. To create a menube menu that uses a JSON file in the current path named menu.json
+and the display where the menu is used is limited to 5 display lines, the menube
+object would be instantiated using the following method...
+
+```javascript
+var menu = require('menube')('./menu.json'), {
+  displayLines: 5,
+  moreUpLabel: "  ^^^",
+  moreDownLabel: "  vvv"
+});
+```
+
+The menu object can then be used in the application where user input directs calls
+to the menuUp(), menuDown(), menuBack(), and activateSelect() methods while listening
+for menu events that indicate when the application should call getActiveMenu() and
+display the menu labels to the user.
+
+
+### Menu Instance Options
+The optional second argument passed to the menube constructor is an object with
+settings to be used in the menu instance.
+
+
+#### displayLines
+The displayLines settings is used to tell menube the maximum number of lines that
+are available in the display where the menu will be used. When the getActiveMenu()
+method is called to retrieve the menu to be displayed it will be trimmed to fit
+within the displayLines limit.
+
+
+#### moreUpLabel
+If the getActiveMenu() method has trimmed the menu to fit within the displayLines
+and there are more menu options above the top display line then the top line in
+the active menu will be a label that indicates there are more menu options above.
+The text of the label can be customized by setting the moreUpLabel to a string
+to be used as the label.
+
+
+#### moreDownLabel
+When the getActiveMenu() method trims the menu to fit in the displayLines limit and
+there are more menu items below the bottom of the display then the last line in the
+menu will be a label to indicate there are more menu items below. Setting the
+moreDownLabel option to a string will set a custom label to be displayed in place
+of the default label.
+
+
+
 ## Menu Construction
 Menus are defined in JSON files where each file contains an array of menu items.
 Each menu item includes a label to be used by the menu display mechanism while
@@ -194,6 +247,16 @@ menu interaction.
 The currently active menu branch is returned by the getActiveMenu() method. The
 branch is an array of menu items and can be used to display menu item labels in
 the user interface.
+
+If the optional displayLines setting was used when creating the menube instance
+then the getActiveMenu() method will return a trimmed menu if the branch is too
+long to fit within the specified number of display lines.
+
+
+### getActiveBranch()
+If the displayLines setting is used but the application needs the non-trimmed
+menu branch then the getActiveBranch() method can be used to retrieve the complete
+menu branch that is currently active.
 
 
 ### getCurrentSelect()

@@ -1,11 +1,13 @@
 // menube function to create a menu using the file specified in menuFile
-module.exports = function (menuFile) {
+module.exports = function (menuFile, settings) {
+  settings = settings || {};
   var path = require('path');
   var events = require('events');
   var emitter = new events.EventEmitter();
   var menu = null; // the loaded menu
   var activeMenu = menu; // reference to active menu branch
   var currentSelect = [0]; // index of currently selected menu items
+  var topLine = 0; // the top most line of the menu to display
 
   // Notes on currentSelect:
   // The currentSelect array keeps track of both the currently selected menu item
@@ -98,7 +100,7 @@ module.exports = function (menuFile) {
           }
         })
         // splice in the options at our options item
-        var am = getActiveMenu();
+        var am = getActiveBranch();
         am.splice(currentSelect[currentSelect.length - 1], 0, {
           label: s.label,
           selectScript: s.selectScript,
@@ -141,7 +143,7 @@ module.exports = function (menuFile) {
     currentSelect.pop();
     if (ps.optionsMenu) {
       // clean up dynamic options menu
-      var am = getActiveMenu();
+      var am = getActiveBranch();
       am.splice(currentSelect[currentSelect.length -1], 1);
     }
   }
@@ -163,7 +165,7 @@ module.exports = function (menuFile) {
   // move menu selection down through menu
   function menuDown() {
     var i = currentSelect[currentSelect.length - 1] + 1;
-    if (i >= getActiveMenu().length) {
+    if (i >= getActiveBranch().length) {
       i -= 1;
       return false;
     }
@@ -173,11 +175,47 @@ module.exports = function (menuFile) {
   }
 
 
-  // get active menu branch
-  function getActiveMenu() {
+  // get the active menu branch
+  function getActiveBranch() {
     return currentSelect.reduce(function (cur, val, ci) {
+      // before the last select item return the indexed menu branch, if at the end then return the final menu
       return (ci + 1 < currentSelect.length ? cur.menu[val] : cur.menu);
     }, {menu: menu});
+  }
+
+
+  // get active menu, trimmed if necessary
+  function getActiveMenu() {
+    var selected = currentSelect[currentSelect.length - 1];
+    var activeMenu = getActiveBranch();
+    activeMenu = JSON.parse(JSON.stringify(activeMenu));
+    activeMenu.map(function (item, index) {
+      if (index === selected) {
+        item.selected = true;
+      }
+      return item;
+    });
+    if (!settings.displayLines || activeMenu.length <= settings.displayLines) {
+      return activeMenu;
+    }
+    else {
+      return trimMenu(activeMenu, selected, settings.displayLines);
+    }
+  }
+
+
+  // trim menu to fit display
+  function trimMenu(targetMenu, selected, menuLength) {
+    // top trim at selection only if selected is past second item
+    var menuStart = selected > 1 ? selected : 0;
+    // prevent top trim from under displaying menu
+    menuStart = menuStart + menuLength - 1 <= targetMenu.length ? menuStart : targetMenu.length - menuLength + 1;
+    var finalMenu = (menuStart > 1 ? [{ label: (settings.moreUpLabel ? settings.moreUpLabel : "..."), menuMore: true }] : []);
+    finalMenu = finalMenu.concat(targetMenu.slice(menuStart, menuStart + menuLength - finalMenu.length));
+    if (finalMenu.length + menuStart <= targetMenu.length) {
+      finalMenu[finalMenu.length - 1] = { label: (settings.moreDownLabel ? settings.moreDownLabel : "..."), menuMore: true };
+    }
+    return finalMenu;
   }
 
 
@@ -202,7 +240,7 @@ module.exports = function (menuFile) {
 
   // get the currently selected menu item
   function getCurrentSelect() {
-    return getActiveMenu()[currentSelect[currentSelect.length - 1]];
+    return getActiveBranch()[currentSelect[currentSelect.length - 1]];
   }
 
 
@@ -214,6 +252,7 @@ module.exports = function (menuFile) {
   emitter.getCurrentSelect = getCurrentSelect;
   emitter.getParentSelect = getParentSelect;
   emitter.getActiveMenu = getActiveMenu;
+  emitter.getActiveBranch = getActiveBranch;
 
   // load menu in this instance
   menu = loadMenu(menuFile);

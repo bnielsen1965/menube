@@ -1,0 +1,58 @@
+[
+  {
+    "label": "One",
+    "emit": {
+      "name": "text",
+      "arguments": ["one selected."]
+    }
+  },
+  {
+    "label": "Two",
+    "emit": {
+      "name": "text",
+      "arguments": ["two selected."]
+    }
+  },
+  {
+    "label": "Three",
+    "emit": {
+      "name": "text",
+      "arguments": ["three selected."]
+    }
+  },
+  {
+    "label": "Four",
+    "emit": {
+      "name": "text",
+      "arguments": ["four selected."]
+    }
+  },
+  {
+    "label": "Five",
+    "emit": {
+      "name": "text",
+      "arguments": ["five selected."]
+    }
+  },
+  {
+    "label": "Six",
+    "emit": {
+      "name": "text",
+      "arguments": ["six selected."]
+    }
+  },
+  {
+    "label": "Seven",
+    "emit": {
+      "name": "text",
+      "arguments": ["seven selected."]
+    }
+  },
+  {
+    "label": "Eight",
+    "emit": {
+      "name": "text",
+      "arguments": ["eight selected."]
+    }
+  }
+]

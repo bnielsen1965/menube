@@ -1,6 +1,6 @@
 {
   "name": "menube",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Programmable menu backend.",
   "main": "index.js",
   "scripts": {

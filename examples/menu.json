@@ -51,6 +51,10 @@
     "menuFile": "./level2.json"
   },
   {
+    "label": "Long Menu",
+    "menuFile": "./longmenu.json"
+  },
+  {
     "label": "Exit",
     "emit": "exit"
   }

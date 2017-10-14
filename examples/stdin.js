@@ -7,7 +7,14 @@
 
 // load the menu
 var path = require('path');
-var menu = require('../index.js')(path.resolve(__dirname, 'menu.json'));
+var menu = require('../index.js')(
+  path.resolve(__dirname, 'menu.json'),
+  {
+    displayLines: 5,
+    moreUpLabel: "  ^^^",
+    moreDownLabel: "  vvv"
+  }
+);
 
 // add listeners to menu
 menu
@@ -71,10 +78,9 @@ process.stdin.on('keypress', (str, key) => {
 function showMenu() {
   var p = menu.getParentSelect();
   console.log('\r\n\r\n--- Menu' + (p ? ' (' + p.label + ')' : '') + ' ---');
-  var c = menu.getCurrentSelect();
   menu.getActiveMenu().forEach(function (m) {
     // show menu item, add an asterisk is the item is currently selected
-    console.log(m.label, m === c ? '*' : '');
+    console.log(m.label, m.selected ? '*' : '');
   });
   console.log('------------');
 }
