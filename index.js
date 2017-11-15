@@ -50,9 +50,12 @@ module.exports = function (menuFile, settings) {
   function activateSelect() {
     var s = getCurrentSelect();
 
+    if (!s) {
+      return; // no menu item to activate
+    }
+
     // submenu
-    if (s.menu && s.menu.length) {
-      console.log('IS MENU: ', s.menu)
+    if (s.menu) {
       // submenu selected
       currentSelect.push(0);
       emitter.emit('menu_changed');
